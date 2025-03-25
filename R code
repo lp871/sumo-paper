@@ -71,23 +71,6 @@ Get_CDS_DS_singal <- function(x,index){
 }
 
 
-WT_1_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_1_signal_data_ALL,index='WT1')
-WT_2_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_2_signal_data_ALL,index='WT2')
-WT_3_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_3_signal_data_ALL,index='WT3')
-
-S1KO_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_1_signal_data_ALL,index='S1KO1')
-S1KO_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_2_signal_data_ALL,index='S1KO2')
-S1KO_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_3_signal_data_ALL,index='S1KO3')
-
-S2KO_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_1_signal_data_ALL,index='S2KO1')
-S2KO_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_2_signal_data_ALL,index='S2KO2')
-S2KO_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_3_signal_data_ALL,index='S2KO3')
-
-S2R_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_1_signal_data_ALL,index='S2R1')
-S2R_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_2_signal_data_ALL,index='S2R2')
-S2R_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_3_signal_data_ALL,index='S2R3')
-
-
 Process_to_merge <- function(x1,x2,x3,y1,y2,y3,tag1="WT",tag2="S1KO"){
     ######
     CDS_tab_x = rbind(x1[[1]],x2[[1]],x3[[1]])
@@ -189,3 +172,5 @@ ggsave('S2R_WT_plot.png',height=2.5,width=3)
 ggplot(S2R_S2KO_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2R / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
 ggsave('S2R_S2KO_plot.png',height=2.5,width=3)
 
+
+###
