@@ -174,3 +174,80 @@ ggsave('S2R_S2KO_plot.png',height=2.5,width=3)
 
 
 ###
+
+
+Get_Signal_to_matrix_for_eachGene_all <- function(Loop_region_GM,bam_signal,width=200,index){
+	##### total reads not need ######
+	library(GenomicRanges)
+	###### plus #######
+	GM_plus = Loop_region_GM$plus
+	bam_signal_plus = bam_signal$plus
+	bam_signal_plus = add_chr(bam_signal_plus)
+	######
+	find_plus = findOverlaps(GM_plus,bam_signal_plus)
+	score_plus = bam_signal_plus$score[subjectHits(find_plus)]
+	######
+	GM_plus$score = score_plus
+	###### minus ######
+	GM_minus = Loop_region_GM$minus
+	bam_signal_minus = bam_signal$minus
+	bam_signal_minus = add_chr(bam_signal_minus)
+	######
+	find_minus = findOverlaps(GM_minus,bam_signal_minus)
+	score_minus = bam_signal_minus$score[subjectHits(find_minus)]
+	#######
+	GM_minus$score = score_minus
+    ######
+    GM_plus_mat= t(matrix(GM_plus$score,nrow=width*2+1))
+    #rownames(GM_plus_mat) = GM_plus$Genes[!duplicated(GM_plus$Genes)]
+    ######
+    GM_minus_mat= t(matrix(GM_minus$score,nrow=width*2+1))
+    #rownames(GM_minus_mat) = GM_minus$Genes[!duplicated(GM_minus$Genes)]
+    ######
+    GM_mat = rbind(GM_plus_mat,GM_minus_mat)
+    ######
+    GM_mat_avg = colMeans(GM_mat)
+    ######
+    GM_mat_avg = data.frame(tag1=index,score=GM_mat_avg,index=c(-200:200))
+    ######
+    return(GM_mat_avg)
+}
+
+
+add_chr = function(GR){
+	seqnames = seqnames(GR)
+	seqnames = paste('chr',seqnames,sep='')
+	new_GR = GRanges(seqnames=seqnames,IRanges(start=start(GR),end=end(GR)),strand=strand(GR),score=GR$score)
+	k = which(seqnames(new_GR) %in% paste('chr',c(1:22,c('X','Y')),sep='') == T)
+	new_GR = new_GR[k]
+	####
+	return(new_GR)
+}
+
+
+load("Loop_region_GM")
+
+WT_1_signal_data_avg = Get_Signal_to_matrix_for_eachGene_all(Loop_region_GM,WT_1_signal_new,width=200,index='WT1')
+WT_2_signal_data_avg = Get_Signal_to_matrix_for_eachGene_all(Loop_region_GM,WT_2_signal_new,width=200,index='WT2')
+WT_3_signal_data_avg = Get_Signal_to_matrix_for_eachGene_all(Loop_region_GM,WT_3_signal_new,width=200,index='WT3')
+
+S2KO_1_signal_data_avg = Get_Signal_to_matrix_for_eachGene_all(Loop_region_GM,S2KO_1_signal_new,width=200,index='S2KO1')
+S2KO_2_signal_data_avg = Get_Signal_to_matrix_for_eachGene_all(Loop_region_GM,S2KO_2_signal_new,width=200,index='S2KO2')
+S2KO_3_signal_data_avg = Get_Signal_to_matrix_for_eachGene_all(Loop_region_GM,S2KO_3_signal_new,width=200,index='S2KO3')
+
+
+dat = rbind(WT_1_signal_data_avg,WT_2_signal_data_avg,WT_3_signal_data_avg,S2KO_1_signal_data_avg,S2KO_2_signal_data_avg,S2KO_3_signal_data_avg)
+
+dat_colors = c('#7F0D0C','#7F0D0C','#7F0D0C','#177F81','#177F81','#177F81')
+#dat_colors = c('#7F0D0C','#7F0D0C','#7F0D0C','#FC800F','#FC800F','#FC800F')
+#dat_colors = c('#177F81','#177F81','#177F81','#808080','#808080','#808080')
+#dat_colors = c('#7F0D0C','#7F0D0C','#7F0D0C','#808080','#808080','#808080')
+
+
+file = paste('Test','WT_VS_SUMO2','.png',sep='')
+library(ggplot2)
+png(file,height=2000,width=3000,res=72*12)
+print(ggplot(dat,aes(x=index,y=log2(score),color=tag1)) + geom_line(size=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA))+ scale_y_continuous() + xlab('distance from 3UTR [nt]') + ylab('log10 coverage') + scale_colour_manual(values=dat_colors) + geom_vline(xintercept=0,linetype = "dashed",color='grey'))
+dev.off()
+
+
