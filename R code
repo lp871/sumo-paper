@@ -1,1 +1,213 @@
 
+
+
+Get_Signal_to_matrix_for_eachGene <- function(Loop_region_GM,bam_signal,width=200,index){
+	##### total reads not need ######
+	library(GenomicRanges)
+	###### plus #######
+	GM_plus = Loop_region_GM$plus
+	bam_signal_plus = bam_signal$plus
+	bam_signal_plus = add_chr(bam_signal_plus)
+	######
+	find_plus = findOverlaps(GM_plus,bam_signal_plus)
+	score_plus = bam_signal_plus$score[subjectHits(find_plus)]
+	######
+	GM_plus$score = score_plus
+	###### minus ######
+	GM_minus = Loop_region_GM$minus
+	bam_signal_minus = bam_signal$minus
+	bam_signal_minus = add_chr(bam_signal_minus)
+	######
+	find_minus = findOverlaps(GM_minus,bam_signal_minus)
+	score_minus = bam_signal_minus$score[subjectHits(find_minus)]
+	#######
+	GM_minus$score = score_minus
+    ######
+    GM_plus_mat= t(matrix(GM_plus$score,nrow=width*2+1))
+    #rownames(GM_plus_mat) = GM_plus$Genes
+    ######
+    GM_minus_mat= t(matrix(GM_minus$score,nrow=width*2+1))
+    #rownames(GM_minus_mat) = GM_minus$Genes
+    ######
+    GM_mat = rbind(GM_plus_mat,GM_minus_mat)
+    ######
+    return(GM_mat)
+}
+
+
+
+WT_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,WT_1_signal_new,width=200,index='WT1')
+WT_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,WT_2_signal_new,width=200,index='WT2')
+WT_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,WT_3_signal_new,width=200,index='WT3')
+
+S2KO_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2KO_1_signal_new,width=200,index='S2KO1')
+S2KO_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2KO_2_signal_new,width=200,index='S2KO2')
+S2KO_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2KO_3_signal_new,width=200,index='S2KO3')
+
+S1KO_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S1KO_1_signal_new,width=200,index='S1KO1')
+S1KO_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S1KO_2_signal_new,width=200,index='S1KO2')
+S1KO_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S1KO_3_signal_new,width=200,index='S1KO3')
+
+S2R_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2R_1_signal_new,width=200,index='S2R1')
+S2R_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2R_2_signal_new,width=200,index='S2R2')
+S2R_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2R_3_signal_new,width=200,index='S2R3')
+
+
+#######
+
+Get_CDS_DS_singal <- function(x,index){
+	####
+	CDS_mat = x[,1:150]
+	####
+	DS_mat = x[,201:300]
+	#### get the average ###
+	CDS_mat_avg = apply(CDS_mat,1,mean)
+	CDS_mat_avg = data.frame(Genes = 1:length(CDS_mat_avg), Score = CDS_mat_avg)
+	CDS_mat_avg$tag1 = 'CDS'
+	CDS_mat_avg$tag2 = index
+	#### 
+	DS_mat_avg = apply(DS_mat,1,mean)
+	DS_mat_avg = data.frame(Genes = 1:length(DS_mat_avg), Score = DS_mat_avg)
+	DS_mat_avg$tag1 = 'DS'
+	DS_mat_avg$tag2 = index
+	####
+	return(list(CDS_mat_avg,DS_mat_avg))
+}
+
+
+WT_1_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_1_signal_data_ALL,index='WT1')
+WT_2_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_2_signal_data_ALL,index='WT2')
+WT_3_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_3_signal_data_ALL,index='WT3')
+
+S1KO_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_1_signal_data_ALL,index='S1KO1')
+S1KO_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_2_signal_data_ALL,index='S1KO2')
+S1KO_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_3_signal_data_ALL,index='S1KO3')
+
+S2KO_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_1_signal_data_ALL,index='S2KO1')
+S2KO_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_2_signal_data_ALL,index='S2KO2')
+S2KO_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_3_signal_data_ALL,index='S2KO3')
+
+S2R_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_1_signal_data_ALL,index='S2R1')
+S2R_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_2_signal_data_ALL,index='S2R2')
+S2R_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_3_signal_data_ALL,index='S2R3')
+
+
+Process_to_merge <- function(x1,x2,x3,y1,y2,y3,tag1="WT",tag2="S1KO"){
+    ######
+    CDS_tab_x = rbind(x1[[1]],x2[[1]],x3[[1]])
+    CDS_tab_x$tag3 = tag1
+    CDS_tab_y = rbind(y1[[1]],y2[[1]],y3[[1]])
+    CDS_tab_y$tag3 = tag2
+    ######
+    CDS_tab = rbind(DS_tab_x,DS_tab_y)
+    #print(head(CDS_tab))
+    ######
+    CDS_result <- aov(Score ~ tag3 * tag2, data = CDS_tab)
+    print("CDS:")
+    print(summary(CDS_result))
+    ######
+    DS_tab_x = rbind(x1[[2]],x2[[2]],x3[[2]])
+    DS_tab_x$tag3 = tag1
+    DS_tab_y = rbind(y1[[2]],y2[[2]],y3[[2]])
+    DS_tab_y$tag3 = tag2
+    ######
+    DS_tab = rbind(DS_tab_x,DS_tab_y)
+    ######
+    DS_result <- aov(Score ~ tag3 * tag2, data = DS_tab)
+    ######
+    print("DS:")
+    print(summary(DS_result))
+    ###### output the avg folder change !!! #############
+    ######
+    CDS_tab_Score1 = (x1[[1]]$Score + x2[[1]]$Score + x3[[1]]$Score)/3
+    CDS_tab_Score2 = (y1[[1]]$Score + y2[[1]]$Score + y3[[1]]$Score)/3
+    CDS_tab_Fold = log2(c(CDS_tab_Score2+0.1) / c(CDS_tab_Score1+0.1))
+    ######
+    DS_tab_Score1 = (x1[[2]]$Score + x2[[2]]$Score + x3[[2]]$Score)/3
+    DS_tab_Score2 = (y1[[2]]$Score + y2[[2]]$Score + y3[[2]]$Score)/3
+    DS_tab_Fold = log2(c(DS_tab_Score2+0.1) / c(DS_tab_Score1+0.1))
+    ######
+    ######
+    CDS_tab = x1[[1]]
+    CDS_tab$Score = CDS_tab_Fold
+    DS_tab = x1[[2]]
+    DS_tab$Score = DS_tab_Fold
+    #######
+    return(rbind(CDS_tab,DS_tab))
+}
+
+S1KO_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S1KO_1_signal_data_ALL_DDS,S1KO_2_signal_data_ALL_DDS,S1KO_3_signal_data_ALL_DDS,tag1="WT",tag2="S1KO")
+S2KO_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S2KO_1_signal_data_ALL_DDS,S2KO_2_signal_data_ALL_DDS,S2KO_3_signal_data_ALL_DDS,tag1="WT",tag2="S2KO")
+S2R_S2KO_plot = Process_to_merge(S2KO_1_signal_data_ALL_DDS,S2KO_2_signal_data_ALL_DDS,S2KO_3_signal_data_ALL_DDS,S2R_1_signal_data_ALL_DDS,S2R_2_signal_data_ALL_DDS,S2R_3_signal_data_ALL_DDS,tag1="S2KO",tag2="S2R")
+S2R_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S2R_1_signal_data_ALL_DDS,S2R_2_signal_data_ALL_DDS,S2R_3_signal_data_ALL_DDS,tag1="WT",tag2="S2R")
+
+
+library(ggplot2)
+
+ggplot(S2R_WT_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2R / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey')
+ggsave('S2R_WT_fold_random.png',height=2.5,width=3)
+
+
+######
+######
+
+load('Loop_region_GM')
+
+WT_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,WT_1_signal_new,width=200,index='WT1')
+WT_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,WT_2_signal_new,width=200,index='WT2')
+WT_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,WT_3_signal_new,width=200,index='WT3')
+
+S2KO_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S2KO_1_signal_new,width=200,index='S2KO1')
+S2KO_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S2KO_2_signal_new,width=200,index='S2KO2')
+S2KO_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S2KO_3_signal_new,width=200,index='S2KO3')
+
+S1KO_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S1KO_1_signal_new,width=200,index='S1KO1')
+S1KO_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S1KO_2_signal_new,width=200,index='S1KO2')
+S1KO_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S1KO_3_signal_new,width=200,index='S1KO3')
+
+S2R_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S2R_1_signal_new,width=200,index='S2R1')
+S2R_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S2R_2_signal_new,width=200,index='S2R2')
+S2R_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,S2R_3_signal_new,width=200,index='S2R3')
+
+#####
+WT_1_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_1_signal_data_ALL,index='WT1')
+WT_2_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_2_signal_data_ALL,index='WT2')
+WT_3_signal_data_ALL_DDS = Get_CDS_DS_singal(WT_3_signal_data_ALL,index='WT3')
+
+S1KO_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_1_signal_data_ALL,index='S1KO1')
+S1KO_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_2_signal_data_ALL,index='S1KO2')
+S1KO_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S1KO_3_signal_data_ALL,index='S1KO3')
+
+S2KO_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_1_signal_data_ALL,index='S2KO1')
+S2KO_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_2_signal_data_ALL,index='S2KO2')
+S2KO_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S2KO_3_signal_data_ALL,index='S2KO3')
+
+S2R_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_1_signal_data_ALL,index='S2R1')
+S2R_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_2_signal_data_ALL,index='S2R2')
+S2R_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_3_signal_data_ALL,index='S2R3')
+
+
+
+S1KO_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S1KO_1_signal_data_ALL_DDS,S1KO_2_signal_data_ALL_DDS,S1KO_3_signal_data_ALL_DDS,tag1="WT",tag2="S1KO")
+S2KO_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S2KO_1_signal_data_ALL_DDS,S2KO_2_signal_data_ALL_DDS,S2KO_3_signal_data_ALL_DDS,tag1="WT",tag2="S2KO")
+S2R_S2KO_plot = Process_to_merge(S2KO_1_signal_data_ALL_DDS,S2KO_2_signal_data_ALL_DDS,S2KO_3_signal_data_ALL_DDS,S2R_1_signal_data_ALL_DDS,S2R_2_signal_data_ALL_DDS,S2R_3_signal_data_ALL_DDS,tag1="S2KO",tag2="S2R")
+S2R_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S2R_1_signal_data_ALL_DDS,S2R_2_signal_data_ALL_DDS,S2R_3_signal_data_ALL_DDS,tag1="WT",tag2="S2R")
+
+
+library(ggplot2)
+
+ggplot(S1KO_WT_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S1KO / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
+ggsave('S1KO_WT_plot.png',height=2.5,width=3)
+
+
+ggplot(S2KO_WT_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2KO / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
+ggsave('S2KO_WT_plot.png',height=2.5,width=3)
+
+
+ggplot(S2R_WT_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2R / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
+ggsave('S2R_WT_plot.png',height=2.5,width=3)
+
+
+ggplot(S2R_S2KO_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2R / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
+ggsave('S2R_S2KO_plot.png',height=2.5,width=3)
+
