@@ -49,24 +49,6 @@ Get_Signal_to_matrix_for_eachGene <- function(Loop_region_GM,bam_signal,width=20
 }
 
 
-
-WT_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,WT_1_signal_new,width=200,index='WT1')
-WT_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,WT_2_signal_new,width=200,index='WT2')
-WT_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,WT_3_signal_new,width=200,index='WT3')
-
-S2KO_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2KO_1_signal_new,width=200,index='S2KO1')
-S2KO_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2KO_2_signal_new,width=200,index='S2KO2')
-S2KO_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2KO_3_signal_new,width=200,index='S2KO3')
-
-S1KO_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S1KO_1_signal_new,width=200,index='S1KO1')
-S1KO_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S1KO_2_signal_new,width=200,index='S1KO2')
-S1KO_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S1KO_3_signal_new,width=200,index='S1KO3')
-
-S2R_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2R_1_signal_new,width=200,index='S2R1')
-S2R_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2R_2_signal_new,width=200,index='S2R2')
-S2R_3_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(random_GM,S2R_3_signal_new,width=200,index='S2R3')
-
-
 #######
 
 Get_CDS_DS_singal <- function(x,index){
