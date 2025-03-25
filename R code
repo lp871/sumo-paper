@@ -1,4 +1,18 @@
+########## load the loop location and RNA-seq signals #######
+load('Loop_region_GM')
 
+load('WT_1_signal_new')
+load('WT_2_signal_new')
+load('WT_3_signal_new')
+load('S1KO_1_signal_new')
+load('S1KO_2_signal_new')
+load('S1KO_3_signal_new')
+load('S2KO_1_signal_new')
+load('S2KO_2_signal_new')
+load('S2KO_3_signal_new')
+load('S2R_1_signal_new')
+load('S2R_2_signal_new')
+load('S2R_3_signal_new')
 
 
 Get_Signal_to_matrix_for_eachGene <- function(Loop_region_GM,bam_signal,width=200,index){
@@ -136,22 +150,10 @@ Process_to_merge <- function(x1,x2,x3,y1,y2,y3,tag1="WT",tag2="S1KO"){
     return(rbind(CDS_tab,DS_tab))
 }
 
-S1KO_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S1KO_1_signal_data_ALL_DDS,S1KO_2_signal_data_ALL_DDS,S1KO_3_signal_data_ALL_DDS,tag1="WT",tag2="S1KO")
-S2KO_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S2KO_1_signal_data_ALL_DDS,S2KO_2_signal_data_ALL_DDS,S2KO_3_signal_data_ALL_DDS,tag1="WT",tag2="S2KO")
-S2R_S2KO_plot = Process_to_merge(S2KO_1_signal_data_ALL_DDS,S2KO_2_signal_data_ALL_DDS,S2KO_3_signal_data_ALL_DDS,S2R_1_signal_data_ALL_DDS,S2R_2_signal_data_ALL_DDS,S2R_3_signal_data_ALL_DDS,tag1="S2KO",tag2="S2R")
-S2R_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S2R_1_signal_data_ALL_DDS,S2R_2_signal_data_ALL_DDS,S2R_3_signal_data_ALL_DDS,tag1="WT",tag2="S2R")
-
-
-library(ggplot2)
-
-ggplot(S2R_WT_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2R / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey')
-ggsave('S2R_WT_fold_random.png',height=2.5,width=3)
 
 
 ######
 ######
-
-load('Loop_region_GM')
 
 WT_1_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,WT_1_signal_new,width=200,index='WT1')
 WT_2_signal_data_ALL = Get_Signal_to_matrix_for_eachGene(Loop_region_GM,WT_2_signal_new,width=200,index='WT2')
@@ -186,8 +188,6 @@ S2R_1_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_1_signal_data_ALL,index='S2R1'
 S2R_2_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_2_signal_data_ALL,index='S2R2')
 S2R_3_signal_data_ALL_DDS = Get_CDS_DS_singal(S2R_3_signal_data_ALL,index='S2R3')
 
-
-
 S1KO_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S1KO_1_signal_data_ALL_DDS,S1KO_2_signal_data_ALL_DDS,S1KO_3_signal_data_ALL_DDS,tag1="WT",tag2="S1KO")
 S2KO_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS,WT_3_signal_data_ALL_DDS,S2KO_1_signal_data_ALL_DDS,S2KO_2_signal_data_ALL_DDS,S2KO_3_signal_data_ALL_DDS,tag1="WT",tag2="S2KO")
 S2R_S2KO_plot = Process_to_merge(S2KO_1_signal_data_ALL_DDS,S2KO_2_signal_data_ALL_DDS,S2KO_3_signal_data_ALL_DDS,S2R_1_signal_data_ALL_DDS,S2R_2_signal_data_ALL_DDS,S2R_3_signal_data_ALL_DDS,tag1="S2KO",tag2="S2R")
@@ -195,18 +195,14 @@ S2R_WT_plot = Process_to_merge(WT_1_signal_data_ALL_DDS,WT_2_signal_data_ALL_DDS
 
 
 library(ggplot2)
-
 ggplot(S1KO_WT_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S1KO / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
 ggsave('S1KO_WT_plot.png',height=2.5,width=3)
-
 
 ggplot(S2KO_WT_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2KO / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
 ggsave('S2KO_WT_plot.png',height=2.5,width=3)
 
-
 ggplot(S2R_WT_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2R / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
 ggsave('S2R_WT_plot.png',height=2.5,width=3)
-
 
 ggplot(S2R_S2KO_plot,aes(x=tag1,y=Score,fill=tag1)) + geom_boxplot(color='black',alpha=0.5) + theme_classic() + theme(legend.title = element_blank(),panel.border=element_rect(size=1,fill = NA)) + ylab('log2 fold change (S2R / WT)') + xlab('') + geom_hline(yintercept=0,linetype = "dashed",color='grey') + scale_y_continuous(limits=c(-4,4))
 ggsave('S2R_S2KO_plot.png',height=2.5,width=3)
